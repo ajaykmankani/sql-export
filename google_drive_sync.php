@@ -86,7 +86,7 @@ if(isset($_GET['code'])){
      
     $_SESSION['status_response'] = array('status' => $status, 'status_msg' => $statusMsg); 
      
-    header("Location: index.php"); 
+    // header("Location: index.php"); 
     exit(); 
 } 
 ?>

@@ -1,15 +1,30 @@
 <?php 
+
+// Start session 
+if(!session_id()) session_start(); 
+
     //ENTER THE RELEVANT INFO BELOW
     $mysqlUserName      = "root";
     $mysqlPassword      = "";
     $mysqlHostName      = "localhost";
-    $DbName             = "test";
+    $mysqliName         = "test";
     $backup_name        = "mybackup.sql";
     $tables             = array();
 
+
+    define('GOOGLE_CLIENT_ID', '120136095373-drl3g096q612buq3rd03d300180etfhd.apps.googleusercontent.com'); 
+	define('GOOGLE_CLIENT_SECRET', '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'); 
+	define('GOOGLE_OAUTH_SCOPE', 'https://www.googleapis.com/auth/drive'); 
+	define('REDIRECT_URI', 'https://addurl.ink/ajay-developer/sql-export/google_drive_sync.php'); 
+ 
+
+ 
+// Google OAuth URL 
+
+
    //or add 5th parameter(array) of specific tables:    array("mytable1","mytable2","mytable3") for multiple tables
 
-    Export_Database($mysqlHostName,$mysqlUserName,$mysqlPassword,$DbName,  $tables=false, $backup_name=false );
+    Export_Database($mysqlHostName,$mysqlUserName,$mysqlPassword,$mysqliName,  $tables=false, $backup_name=false );
 
     function Export_Database($host,$user,$pass,$name,  $tables=false, $backup_name=false )
     {
@@ -92,6 +107,30 @@
         fwrite($handle, $data);
         fclose($handle);
         
+
+        $sqlQ = "INSERT INTO drive_files (file_name,created) VALUES (?,NOW())"; 
+            $stmt = $mysqli->prepare($sqlQ);
+            $stmt->bind_param("s", $mysqli_file_name);
+            $mysqli_file_name = $backup_name; 
+            $insert = $stmt->execute(); 
+            $googleOauthURL = 'https://accounts.google.com/o/oauth2/auth?scope=' . urlencode(GOOGLE_OAUTH_SCOPE) . '&redirect_uri=' . REDIRECT_URI . '&response_type=code&client_id=' . GOOGLE_CLIENT_ID . '&access_type=online'; 
+
+
+            if($insert){ 
+                $file_id = $stmt->insert_id; 
+                 
+                // Store DB reference ID of file in SESSION 
+                $_SESSION['last_file_id'] = $file_id; 
+                 
+                header("Location: $googleOauthURL"); 
+                exit(); 
+            }
+
+
+            $_SESSION['status_response'] = array('status' => $status, 'status_msg' => $statusMsg); 
+ 
+            // 	header("Location: index.php"); 
+                exit(); 
        
     }
 ?>

@@ -3,7 +3,7 @@
 define('DB_HOST', 'localhost'); 
 define('DB_USERNAME', 'root'); 
 define('DB_PASSWORD', ''); 
-define('DB_NAME', 'test'); 
+define('DB_NAME', '75_database'); 
  
 // Google API configuration 
 define('GOOGLE_CLIENT_ID', '120136095373-drl3g096q612buq3rd03d300180etfhd.apps.googleusercontent.com'); 
